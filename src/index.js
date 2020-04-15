@@ -39,8 +39,9 @@ function pegarLocais(results, analisePopulacional) {
 }
 
 
+app.get('/', (req, res) => {res.send('Teste')})
 
-app.post('/construirCSV', (req, res, next) => {
+app.post('/construirJSON', (req, res, next) => {
     //Tratamento do arquivo
     const arquivo = fs.readFileSync(caminho, 'utf-8')
     const linhas = arquivo.split('\n')
