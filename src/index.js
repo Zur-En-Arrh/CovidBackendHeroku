@@ -3,7 +3,7 @@ const app = express()
 const fs = require('fs')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const caminho = __dirname + '/AnalisePopulacionalTratada.csv'
+const caminho = __dirname+'./AnalisePopulacionalTratada.csv'
 
 app.use(express.static('.'))
 app.use(cors())
