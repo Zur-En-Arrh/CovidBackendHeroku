@@ -57,7 +57,7 @@ function construirVetor(lugar) {
     return analisePopulacional.find(linha => linha.nome === lugar.cidade)
 }
 
-function abrirCSV(nome) {
+function abrirCSV(nome, estado=null) {
     const arquivo = fs.readFileSync(__dirname+`/../CSV/${nome}.csv`, 'utf-8')
     const linhas = arquivo.split('\n')
     const resultado = []
@@ -65,6 +65,7 @@ function abrirCSV(nome) {
         let colunas = linha.split(',')
         resultado.push(colunas)
     })
+
     return resultado
 }
 
@@ -99,30 +100,44 @@ app.post('/construirJSON', (req, res, next) => {
     })
 })
 
-app.get('/data/:csv', (req, res) => {
-    const nome = req.params.csv
-    const resultado = abrirCSV(nome)
+app.get('/data/cidades/:estado', (req, res) => {
+    const sigla = req.params.estado
+    const resultado = abrirCSV('Cities')
     //console.log('Cidades', resultado)
-    if(nome == 'Cities') {
-        const dados = []
-        resultado.filter(vetor => vetor[0] !== 'State').forEach(vetor => {
-            vetor.map(celula => {
-                if(celula !== 'False' && celula.length > 2)
-                    dados.push(celula)
-            })
+    const dados = []
+    resultado.filter(vetor => vetor[0] !== 'State').forEach(vetor => {
+        vetor.map(celula => {
+            if(celula !== 'False' && celula.length > 2)
+                dados.push(celula)
         })
+    })
 
-        res.status(200).json(dados)
-    }else if (nome == 'States') {
-        const siglas = []
-        resultado.map(vetor => {
-            if(vetor[0] !== '')
-                siglas.push(vetor[1])
-        })
+    const filtro = dados.filter(cidade => {
+        [nome, estado] = cidade.split('-')
+        return estado == sigla
+    })
 
-        res.status(200).json(siglas)
-    }
+    res.status(200).json(filtro)
+   
 })
+
+app.get('/data/estados', (req, res) => {
+    const resultado = abrirCSV('States')
+    //console.log('Cidades', resultado)
+    const siglas = []
+    resultado.map(vetor => {
+        if(vetor[0] !== '')
+            siglas.push(vetor[1])
+    })
+
+    res.status(200).json(siglas)
+})
+
+app.get('/data/:csv', (req, res) => {
+    
+})
+
+
 
 //process.env.PORT || 3000
 app.listen(process.env.PORT || 3000,() => {
